@@ -38,14 +38,20 @@ class StopCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		$p = $sender->getServer()->getPlayer($sender);
+		if($p == null and !$p->isOnline()){
+			if(!$this->testPermission($sender)){
+				return true;
+			}
+
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.stop.start"));
+
+			$sender->getServer()->shutdown();
+
+			return true;
+		}else{
+			$sender->sendMessage("You can't stop the server!");
 			return true;
 		}
-
-		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.stop.start"));
-
-		$sender->getServer()->shutdown();
-
-		return true;
 	}
 }
